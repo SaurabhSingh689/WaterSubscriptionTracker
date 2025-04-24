@@ -1,140 +1,154 @@
-
-import React, { useState, useEffect } from "react";
-import { format } from "date-fns";
+// App.js
+import React, { useEffect, useState } from "react";
+import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css";
+import './App.css';
+import { getDatabase, ref, onValue, set } from "firebase/database";
+import { initializeApp } from "firebase/app";
 import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
-import { db } from "./firebase";
-import {
- ref,
- onValue,
- set,
- update
-} from "firebase/database";
-const getToday = () => format(new Date(), "yyyy-MM-dd");
-function App() {
- const [selectedDate, setSelectedDate] = useState(getToday());
- const [deliveries, setDeliveries] = useState({});
- const [price, setPrice] = useState(20);
- const [priceHistory, setPriceHistory] = useState([{ date: getToday(), price: 20 }]);
- const [paidMonths, setPaidMonths] = useState([]);
- // Load data from Firebase
- useEffect(() => {
- const fetchData = () => {
- onValue(ref(db, "deliveries"), (snap) => {
- setDeliveries(snap.val() || {});
- });
- onValue(ref(db, "price"), (snap) => {
- setPrice(snap.val() || 20);
- });
- onValue(ref(db, "priceHistory"), (snap) => {
- setPriceHistory(snap.val() || [{ date: getToday(), price: 20 }]);
- });
- onValue(ref(db, "paidMonths"), (snap) => {
- setPaidMonths(snap.val() || []);
- });
- };
- fetchData();
- }, []);
- // Notification reminder
- useEffect(() => {
- if (Notification.permission !== "granted") Notification.requestPermission();
- const interval = setInterval(() => {
- const now = new Date();
- if (
- now.getHours() === 8 &&
- localStorage.getItem("notifiedDate") !== format(now, "yyyy-MM-dd")
- ) {
- new Notification("Reminder: Mark your water bottle delivery!");
- localStorage.setItem("notifiedDate", format(now, "yyyy-MM-dd"));
- }
- }, 60000);
- return () => clearInterval(interval);
- }, []);
- const toggleDelivery = (date) => {
- const newStatus = deliveries[date] === "delivered" ? "skipped" : "delivered";
- const updated = { ...deliveries, [date]: newStatus };
- set(ref(db, "deliveries"), updated);
- };
- const changePrice = (newPrice) => {
- const today = getToday();
- set(ref(db, "price"), Number(newPrice));
- const newHistory = [...priceHistory, { date: today, price: Number(newPrice) }];
- set(ref(db, "priceHistory"), newHistory);
- };
- const getPriceForDate = (date) => {
- const sorted = [...priceHistory].sort((a, b) => new Date(b.date) - new Date(a.date));
- for (const p of sorted) {
- if (new Date(date) >= new Date(p.date)) return p.price;
- }
- return price;
- };
- const getMonthlySummary = (month) => {
- const days = Object.entries(deliveries).filter(([date, status]) => {
- return date.startsWith(month) && status === "delivered";
- });
- const total = days.reduce((sum, [date]) => sum + getPriceForDate(date), 0);
- return { days: days.length, total };
- };
- const handleExport = () => {
- const input = document.getElementById("summary");
- html2canvas(input).then((canvas) => {
- const imgData = canvas.toDataURL("image/png");
- const pdf = new jsPDF();
- pdf.addImage(imgData, "PNG", 10, 10, 190, 0);
- pdf.save(`WaterSummary-${selectedDate.slice(0, 7)}.pdf`);
- });
- };
- const togglePaid = (month) => {
- const updated = paidMonths.includes(month)
- ? paidMonths.filter((m) => m !== month)
- : [...paidMonths, month];
- set(ref(db, "paidMonths"), updated);
- };
- return (
-    <div style={{ fontFamily: "sans-serif", padding: "1rem", maxWidth: 480, margin: "auto" }}>
- <h2 style={{ textAlign: "center" }}>Water Bottle Tracker</h2>
- <div style={{ marginBottom: "1rem" }}>
- <label>Date: </label>
- <input type="date" value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} />
- </div>
- <div>
- <button onClick={() => toggleDelivery(selectedDate)} style={{ padding: "0.5rem 1rem" }}>
- {deliveries[selectedDate] === "delivered" ? "Mark as Skipped" : "Mark as Delivered"}
- </button>
- <div style={{ marginTop: "0.5rem" }}>
- Status: <b>{deliveries[selectedDate] || "Not Marked"}</b>
- </div>
- </div>
- <hr />
- <div>
- <label>Price per Bottle: </label>
- <input
- type="number"
- value={price}
- onChange={(e) => changePrice(e.target.value)}
- style={{ width: "60px", marginLeft: "0.5rem" }}
- />
- </div>
- <hr />
- <div id="summary" style={{ fontSize: "0.9rem" }}>
- <h3>Monthly Summary</h3>
- {[...Array(6)].map((_, i) => {
- const date = new Date();
- date.setMonth(date.getMonth() - i);
- const monthStr = format(date, "yyyy-MM");
- const { days, total } = getMonthlySummary(monthStr);
- return (
- <div key={monthStr} style={{ marginBottom: "0.5rem" }}>
- <b>{monthStr}</b>: {days} bottles ? ?{total}{" "}
- <button onClick={() => togglePaid(monthStr)}>
- {paidMonths.includes(monthStr) ? "Paid" : "Mark as Paid"}
- </button>
- </div>
- );
- })}
- <button onClick={handleExport} style={{ marginTop: "1rem" }}>Export as PDF</button>
- </div>
- </div>
- );
-}
-export default App;
+import "jspdf-autotable";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDcjLslqHE4cD4YhVkS9M4SGYuJ02bT8sY",
+    authDomain: "watersubstracker.firebaseapp.com",
+      projectId: "watersubstracker",
+        storageBucket: "watersubstracker.firebasestorage.app",
+          messagingSenderId: "337275338555",
+            appId: "1:337275338555:web:57ac0c213170d8c8dc811e",
+              databaseURL: "https://watersubstracker-default-rtdb.asia-southeast1.firebasedatabase.app/"
+              };
+
+              const app = initializeApp(firebaseConfig);
+              const db = getDatabase(app);
+
+              export default function App() {
+                const [selectedDate, setSelectedDate] = useState(new Date());
+                  const [deliveries, setDeliveries] = useState({});
+                    const [price, setPrice] = useState(0);
+                      const [paidStatus, setPaidStatus] = useState({});
+
+                        useEffect(() => {
+                            const deliveriesRef = ref(db, "deliveries");
+                                const priceRef = ref(db, "price");
+                                    const paidRef = ref(db, "paidStatus");
+
+                                        onValue(deliveriesRef, (snapshot) => {
+                                              setDeliveries(snapshot.val() || {});
+                                                  });
+
+                                                      onValue(priceRef, (snapshot) => {
+                                                            setPrice(snapshot.val() || 0);
+                                                                });
+
+                                                                    onValue(paidRef, (snapshot) => {
+                                                                          setPaidStatus(snapshot.val() || {});
+                                                                              });
+                                                                                }, []);
+
+                                                                                  const formatDate = (date) => date.toISOString().split("T")[0];
+
+                                                                                    const handleMarkDelivered = () => {
+                                                                                        const dateStr = formatDate(selectedDate);
+                                                                                            const updatedDeliveries = { ...deliveries, [dateStr]: true };
+                                                                                                set(ref(db, "deliveries"), updatedDeliveries);
+                                                                                                  };
+
+                                                                                                    const handleMarkSkipped = () => {
+                                                                                                        const dateStr = formatDate(selectedDate);
+                                                                                                            const updatedDeliveries = { ...deliveries, [dateStr]: false };
+                                                                                                                set(ref(db, "deliveries"), updatedDeliveries);
+                                                                                                                  };
+
+                                                                                                                    const handlePriceChange = (e) => {
+                                                                                                                        const newPrice = parseFloat(e.target.value);
+                                                                                                                            if (!isNaN(newPrice)) {
+                                                                                                                                  set(ref(db, "price"), newPrice);
+                                                                                                                                      }
+                                                                                                                                        };
+
+                                                                                                                                          const togglePaidStatus = (monthKey) => {
+                                                                                                                                              const updatedStatus = { ...paidStatus, [monthKey]: !paidStatus[monthKey] };
+                                                                                                                                                  set(ref(db, "paidStatus"), updatedStatus);
+                                                                                                                                                    };
+
+                                                                                                                                                      const getMonthlySummary = () => {
+                                                                                                                                                          const summary = {};
+                                                                                                                                                              for (const dateStr in deliveries) {
+                                                                                                                                                                    const [year, month] = dateStr.split("-");
+                                                                                                                                                                          const key = `${year}-${month}`;
+                                                                                                                                                                                if (!summary[key]) summary[key] = { count: 0, total: 0 };
+                                                                                                                                                                                      if (deliveries[dateStr]) summary[key].count += 1;
+                                                                                                                                                                                          }
+                                                                                                                                                                                              for (const key in summary) {
+                                                                                                                                                                                                    summary[key].total = summary[key].count * price;
+                                                                                                                                                                                                        }
+                                                                                                                                                                                                            return summary;
+                                                                                                                                                                                                              };
+
+                                                                                                                                                                                                                const exportPDF = () => {
+                                                                                                                                                                                                                    const summary = getMonthlySummary();
+                                                                                                                                                                                                                        const doc = new jsPDF();
+                                                                                                                                                                                                                            const rows = Object.keys(summary).map((month) => [
+                                                                                                                                                                                                                                  month,
+                                                                                                                                                                                                                                        summary[month].count,
+                                                                                                                                                                                                                                              `₹${summary[month].total}`,
+                                                                                                                                                                                                                                                    paidStatus[month] ? "Paid" : "Unpaid"
+                                                                                                                                                                                                                                                        ]);
+                                                                                                                                                                                                                                                            doc.autoTable({ head: [["Month", "Bottles", "Total", "Status"]], body: rows });
+                                                                                                                                                                                                                                                                doc.save("summary.pdf");
+                                                                                                                                                                                                                                                                  };
+
+                                                                                                                                                                                                                                                                    const selectedDateStr = formatDate(selectedDate);
+                                                                                                                                                                                                                                                                      const summary = getMonthlySummary();
+
+                                                                                                                                                                                                                                                                        return (
+                                                                                                                                                                                                                                                                            <div style={{ padding: 20, fontFamily: "Arial" }}>
+                                                                                                                                                                                                                                                                                  <h2>💧 Water Bottle Tracker</h2>
+                                                                                                                                                                                                                                                                                        <Calendar onChange={setSelectedDate} value={selectedDate} />
+                                                                                                                                                                                                                                                                                              <p>Selected Date: {selectedDateStr}</p>
+                                                                                                                                                                                                                                                                                                    <button onClick={handleMarkDelivered} style={{ marginRight: 10 }}>Mark as Delivered</button>
+                                                                                                                                                                                                                                                                                                          <button onClick={handleMarkSkipped}>Mark as Skipped</button>
+
+                                                                                                                                                                                                                                                                                                                <div style={{ marginTop: 20 }}>
+                                                                                                                                                                                                                                                                                                                        <label>Bottle Price: ₹</label>
+                                                                                                                                                                                                                                                                                                                                <input
+                                                                                                                                                                                                                                                                                                                                          type="number"
+                                                                                                                                                                                                                                                                                                                                                    value={price}
+                                                                                                                                                                                                                                                                                                                                                              onChange={handlePriceChange}
+                                                                                                                                                                                                                                                                                                                                                                        style={{ width: 80, marginLeft: 5 }}
+                                                                                                                                                                                                                                                                                                                                                                                />
+                                                                                                                                                                                                                                                                                                                                                                                      </div>
+
+                                                                                                                                                                                                                                                                                                                                                                                            <h3 style={{ marginTop: 30 }}>Monthly Summary</h3>
+                                                                                                                                                                                                                                                                                                                                                                                                  <table border="1" cellPadding="8">
+                                                                                                                                                                                                                                                                                                                                                                                                          <thead>
+                                                                                                                                                                                                                                                                                                                                                                                                                    <tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                <th>Month</th>
+                                                                                                                                                                                                                                                                                                                                                                                                                                            <th>Delivered</th>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                        <th>Total</th>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <th>Status</th>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <th>Toggle</th>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          </tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  </thead>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          <tbody>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    {Object.keys(summary).map((monthKey) => (
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <tr key={monthKey}>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              <td>{monthKey}</td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <td>{summary[monthKey].count}</td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          <td>₹{summary[monthKey].total}</td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <td>{paidStatus[monthKey] ? "Paid" : "Unpaid"}</td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      <td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      <button onClick={() => togglePaidStatus(monthKey)}>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        {paidStatus[monthKey] ? "Unmark" : "Mark Paid"}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        </button>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      </td>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  </tr>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ))}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    </tbody>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          </table>
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <button onClick={exportPDF} style={{ marginTop: 20 }}>Export PDF</button>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      );
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
