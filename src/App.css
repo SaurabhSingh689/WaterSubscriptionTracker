@@ -57,4 +57,24 @@ body {
                                                                             margin-bottom: 5px;
                                                                               }
                                                                               }
+/* Fix white text on white background in react-calendar */
+.react-calendar__tile {
+  color: #000 !important;
+    background-color: #fff !important;
+    }
 
+    .react-calendar__tile--active {
+      background-color: #007BFF !important;
+        color: #fff !important;
+        }
+
+        .react-calendar__tile--now {
+          background: #ffeeba !important;
+            color: #000 !important;
+            }
+        .react-calendar__tile:enabled:hover,
+        .react-calendar__tile:enabled:focus {
+          background: #cce5ff !important;
+            color: #000 !important;
+            }
+                
