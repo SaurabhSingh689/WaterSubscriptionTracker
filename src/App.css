@@ -6,7 +6,6 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  max-width: 100vw;
   color: #333;
 }
 /* App container */
@@ -27,7 +26,7 @@ h2 {
   margin-bottom: 1rem;
 }
 p {
-  font-weight: 500;
+  font-weight: 400;
   margin: 1rem 0;
   color: #555; /* Adjust paragraph color */
     font-size: 19px;
@@ -119,8 +118,8 @@ p {
 .monthly-summary {
   margin-top: 1.5rem;
   display: flex;
-  flex-direction: column;
   align-items: center;
+    flex-direction: column;
     justify-content: flex-start;
 
 }
@@ -193,20 +192,10 @@ tbody tr:hover {
 }
 
 @media (max-width: 768px) { /* Mobile responsiveness */
-  body{
-    padding: 0;
-  }
+  
   .App {
     padding: 1rem; /* Adjust padding for smaller screens */
   }
-  .price-input {
-      flex-direction: column; /* Stack price input on small screens */
-  }
-  .button-group {
-    flex-direction: column;
-    }
-    .price-input { /* Stack price input on small screens */
-        flex-direction: column;
-    }
+
     
 }
