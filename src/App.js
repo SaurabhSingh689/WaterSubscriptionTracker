@@ -117,11 +117,13 @@ function App() {
     doc.text(`Monthly Summary for ${currentMonthKey}`, 20, 10);
     doc.autoTable({ head: [["Date", "Status", "Price"]], body: rows });
     doc.text(`Total Bill: ₹${total}`, 20, doc.lastAutoTable.finalY + 10);
-    const pdfDataUri = doc.output("datauristring");
-    const link = document.createElement("a");
-    link.href = pdfDataUri;
-    link.download = `summary_${currentMonthKey}.pdf`;
-    link.click();
+        const pdfDataUri = doc.output('datauristring');
+            const link = document.createElement('a');
+            link.href = pdfDataUri;
+            link.download = `summary_${currentMonthKey}.pdf`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
 
   };
 
