@@ -66,9 +66,6 @@ p {
   border: none;
     background-color: transparent;
 }
-.react-calendar__tile--delivered {
-    position: relative;
-}
 
 .button-group {
   display: flex;
@@ -194,17 +191,7 @@ tbody tr:hover {
     margin-bottom: 10px;
 }
 
-.delivered::after {
-    content: "";
-    position: absolute;
-    top: 5px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background-color: #dc3545; /* Red circle */
-}
+
 
 .price-input {
     flex-direction: row;

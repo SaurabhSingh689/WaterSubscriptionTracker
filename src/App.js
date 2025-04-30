@@ -41,19 +41,6 @@ function App() {
     });
   }, []);
 
-  const tileClassName = ({ date, view }) => {
-    if (view === 'month') {
-      const formattedDate = formatDate(date);
-      const isDelivered = deliveryData[formattedDate]?.status === 'Delivered';
-
-       if (isDelivered) {
-          return 'delivered';
-      } else if (new Date().toDateString() === date.toDateString()) {
-                return 'today';
-            }
-    }
-  };
-
   const formatDate = (date) => {
     const local = new Date(date);
     local.setMinutes(date.getMinutes() - date.getTimezoneOffset());
@@ -117,7 +104,7 @@ function App() {
   return (
     <div className='App'>
       <h2>Water Bottle Subscription Tracker</h2>
-      <Calendar onChange={setSelectedDate} value={selectedDate} tileClassName={tileClassName} />
+         <Calendar onChange={setSelectedDate} value={selectedDate} />
       <p>Selected Date: {formatDate(selectedDate)}</p>
       <p>Status: {getStatus(selectedDate)}</p>
       <div className='button-group'>
