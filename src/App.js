@@ -5,6 +5,8 @@ import { ref, set, update, onValue } from 'firebase/database';
 import { database } from './firebase';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+jsPDF.autoTable = require('jspdf-autotable').default;
+
 import './App.css';
 
 function App() {
