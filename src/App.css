@@ -1,12 +1,12 @@
 body {
-  font-family: inherit;
+  font-family: inherit; /* Use default font */
   margin: 0;
   padding: 0;
   background-color: #f5f8fa; /* Very light gray */
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+  max-width: 100vw;
   color: #333;
 }
 /* App container */
@@ -14,8 +14,8 @@ body {
   text-align: center;
   padding: 30px;
   max-width: 800px;
-  width: 100%;
-    margin: 0;
+  width: 100%; /* Adjust width to 100% */
+  margin: 0;
   background-color: white;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   border-radius: 12px;
@@ -29,7 +29,7 @@ h2 {
 p {
   font-weight: 500;
   margin: 1rem 0;
-  color: #555;
+  color: #555; /* Adjust paragraph color */
     font-size: 19px;
 }
 
@@ -37,10 +37,10 @@ p {
   width: 100%;
   max-width: 100%;
   background: white;
-    border: none;
+  border: none;
   line-height: 1.125em;
   color: #000;
-  margin-bottom: 20px;
+  margin-bottom: 20px; /* Reduce bottom margin */
     font-size: 16px;
 
 }
@@ -55,7 +55,7 @@ p {
 
 .react-calendar__tile {
     text-align: center;
-    padding: 10px;
+    padding: 10px; /* Add some padding to calendar tiles */
 }
 
  .react-calendar__month-view__days__day--weekend {
@@ -64,7 +64,7 @@ p {
 
 .react-calendar__navigation button:disabled {
   border: none;
-    background-color: transparent;
+  background-color: transparent;
 }
 
 .button-group {
@@ -105,15 +105,14 @@ p {
 .price-input input {
   padding: 0.4rem;
   font-size: 1rem;
-    border: none;
-    border-bottom: 1px solid #ccc;
+  border: none;
+  border-bottom: 1px solid #ccc;
   width: 80px;
-    text-align: center;
+  text-align: center;
 }
 
 .price-input input:focus {
-  outline: none;
-  box-shadow: 0 0 0 2px #29abe2; /* Highlight color */
+  outline: none; /* Remove outline on focus */
 }
 
 /* Monthly Summary Styles */
@@ -121,7 +120,7 @@ p {
   margin-top: 1.5rem;
   display: flex;
   flex-direction: column;
-    align-items: center;
+  align-items: center;
     justify-content: flex-start;
 
 }
@@ -145,13 +144,13 @@ p {
 }
 
 /*Table Styles */
-table {
+table { /* Adjust table spacing */
   width: 100%;
   max-width: 100%;
   border-collapse: collapse;
   margin-top: 1rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
+  border-radius: 8px; /* Add border-radius */
   overflow: hidden;
     margin-bottom: 20px;
 }
@@ -163,11 +162,13 @@ thead {
 th, td {
   padding: 0.75rem;
   text-align: left;
-    border-bottom: none;
+    border-bottom: none; /* Remove border bottom from table elements */
 }
-tbody {border-top: 1px solid #e0e0e0}
+tbody {border-top: 1px solid #e0e0e0} /* Add a top border to body */
+
 th {
   font-weight: bold;
+    font-size: 19px; /* Adjust table header font size */
   color: #333;
 }
 
@@ -183,35 +184,29 @@ tbody tr:hover {
 .monthly-summary > button {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: center; /* Center align buttons */
 }
-
-
-.monthly-summary > button:not(:last-child) {
-    margin-bottom: 10px;
-}
-
 
 
 .price-input {
     flex-direction: row;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 768px) { /* Mobile responsiveness */
+  body{
+    padding: 0;
+  }
   .App {
-    padding: 1rem;
+    padding: 1rem; /* Adjust padding for smaller screens */
   }
-  
   .price-input {
-      flex-direction: column;
+      flex-direction: column; /* Stack price input on small screens */
   }
-}
-
   .button-group {
     flex-direction: column;
-  }
-
-    .price-input {
+    }
+    .price-input { /* Stack price input on small screens */
         flex-direction: column;
     }
-
+    
+}
