@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
-import { ref, set, update, onValue } from 'firebase/database';
+import { ref, set, update, onValue,  } from 'firebase/database';
 import { database } from './firebase';
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
-jsPDF.autoTable = require('jspdf-autotable').default;
-
+import { jsPDF } from 'jspdf';
 import './App.css';
+jsPDF.autoTable = require('jspdf-autotable').default;
 
 function App() {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -15,6 +13,7 @@ function App() {
     const [bottlePrice, setBottlePrice] = useState(0);
     const [paidStatus, setPaidStatus] = useState({});
     const [totalBottles, setTotalBottles] = useState(0);
+
     const [totalBill, setTotalBill] = useState(0);
 
 
@@ -104,7 +103,7 @@ function App() {
   const generatePDF = () => {
     const doc = new jsPDF();
     const currentMonthKey = getCurrentMonthKey();
-    const rows = [];
+        const rows = [];
     let total = 0
 
     if(deliveryData){
