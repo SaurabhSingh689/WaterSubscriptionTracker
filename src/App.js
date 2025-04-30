@@ -4,10 +4,8 @@ import "react-calendar/dist/Calendar.css";
 import { ref, set, update, onValue } from "firebase/database";
 import { database } from "./firebase";
 import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable"; // Manually attach if needed
+import autoTable from "jspdf-autotable";
 import "./App.css";
-
-autoTable(jsPDF.API);
 
 function App() {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -67,7 +65,7 @@ function App() {
   const handleBillPaidToggle = () => {
     const monthKey = selectedDate.toISOString().slice(0, 7);
     const isPaid = paidStatus[monthKey];
-    update(ref(database, `paidStatus`), {
+    update(ref(database, "paidStatus"), {
       [monthKey]: !isPaid,
     });
   };
@@ -77,6 +75,7 @@ function App() {
     const monthKey = selectedDate.toISOString().slice(0, 7);
     const rows = [];
     let total = 0;
+
     for (const date in deliveryData) {
       if (date.startsWith(monthKey)) {
         const entry = deliveryData[date];
@@ -86,9 +85,14 @@ function App() {
         }
       }
     }
+
     doc.text(`Monthly Summary for ${monthKey}`, 20, 10);
-    autoTable(doc,{head: [["Date", "Status", "Price"]], body: rows });
-    doc.text(`Total Bill: ₹${total}`, 20, doc.lastAutoTable.finalY + 10);
+    autoTable(doc, {
+      head: [["Date", "Status", "Price"]],
+      body: rows,
+      startY: 20
+    });
+    doc.text(`Total Bill: ₹${total}`, 20, doc.autoTable.previous.finalY + 10);
     doc.save(`summary_${monthKey}.pdf`);
   };
 
