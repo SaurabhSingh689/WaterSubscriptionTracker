@@ -9,11 +9,12 @@ function App() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [deliveryData, setDeliveryData] = useState({});
   const [bottlePrice, setBottlePrice] = useState(0);
+  const [totalBottles, setTotalBottles] = useState(0);
   const [showSummary, setShowSummary] = useState(false);
   const [paidStatus, setPaidStatus] = useState({});
-  const [totalBottles, setTotalBottles] = useState(0);
-    const [deliveryDates, setDeliveryDates] = useState([]);
-  const [totalBill, setTotalBill] = useState(0);
+  const [deliveryDates, setDeliveryDates] = useState([]);
+    const [totalBill, setTotalBill] = useState(0);
+
 
   useEffect(() => {
     const deliveryRef = ref(database, 'deliveries');
@@ -75,50 +76,37 @@ function App() {
     return deliveryData[key]?.status || 'None';
   };
 
-  const getCurrentMonthKey = () => {
-    return new Date().toISOString().slice(0, 7);
-  };
+    const getCurrentMonthKey = () => {
+        return new Date().toISOString().slice(0, 7);
+    };
 
   const generateDeliverySummary = () => {
-    setShowSummary(!showSummary);
-        const currentMonthKey = getCurrentMonthKey();
-        const newDeliveryDates = [];
-        if (deliveryData) {
-            for (const date in deliveryData) {
-                if (date.startsWith(currentMonthKey) && deliveryData[date].status === "Delivered") {
-                    newDeliveryDates.push(date);
-                }
+        setShowSummary(!showSummary);
+    const currentMonthKey = getCurrentMonthKey();
+    const newDeliveryDates = [];
+    if (deliveryData) {
+        for (const date in deliveryData) {
+            if (date.startsWith(currentMonthKey) && deliveryData[date].status === "Delivered") {
+                newDeliveryDates.push(date);
             }
         }
-            setDeliveryDates(newDeliveryDates);  };
-
-  const getDeliveredDates = () => {
-    const currentMonthKey = getCurrentMonthKey();
-    const deliveredDates = [];
-    if (deliveryData) {
-      for (const date in deliveryData) {
-        if (date.startsWith(currentMonthKey)) {
-          const entry = deliveryData[date];
-          if (entry.status === "Delivered") {
-            deliveredDates.push(date);
-          }
-        }
-      }
     }
-    return deliveredDates;
-  };
+        setDeliveryDates(newDeliveryDates);
+    };
+
+
+
 
     const handleBillPaidToggle = () => {
-        const monthKey = selectedDate.toISOString().slice(0, 7);
+      const monthKey = selectedDate.toISOString().slice(0, 7);
         update(ref(database, `paidStatus`), {
             [monthKey]: !paidStatus[monthKey],
         });
-    };
-
+    }
   return (
     <div className='App'>
       <h2>Water Bottle Subscription Tracker</h2>
-      <Calendar onChange={setSelectedDate} value={selectedDate} />
+      <Calendar onChange={setSelectedDate} value={selectedDate}/>
       <p>Selected Date: {formatDate(selectedDate)}</p>
       <p>Status: {getStatus(selectedDate)}</p>
       <div className='button-group'>
@@ -132,18 +120,23 @@ function App() {
       <div className='monthly-summary'>
         <p>Total Bottles Delivered: {totalBottles}</p>
         <p>Total Bill: ₹{totalBill}</p>
-          <button onClick={generateDeliverySummary}>View Monthly Summary</button>
-          <button onClick={handleBillPaidToggle}>
-              Mark Bill as {paidStatus[selectedDate.toISOString().slice(0, 7)] ? "Unpaid" : "Paid"}
-          </button>
+        <button onClick={generateDeliverySummary}>View Monthly Summary</button>
+        <button onClick={handleBillPaidToggle}>
+          Mark Bill as {paidStatus[selectedDate.toISOString().slice(0, 7)] ? "Unpaid" : "Paid"}
+        </button>
       </div>
-         <table>
-          <thead><tr><th>Delivered Dates</th></tr></thead>
-          <tbody>{getDeliveredDates().map((date) => (<tr key={date}><td>{date}</td></tr>))}</tbody>
+      {showSummary && (
+        <table>
+          <thead>
+            <tr><th>Delivered Dates</th></tr>
+          </thead>
+          <tbody>
+            {deliveryDates.map((date) => (<tr key={date}><td>{date}</td></tr>))}
+          </tbody>
         </table>
-      )
+      )}
     </div>
   );
-}
 
+}
 export default App;

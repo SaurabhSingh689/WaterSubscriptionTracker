@@ -2,14 +2,14 @@ body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
   padding: 0;
-  background-color: #e8f0fe; /* Soft light blue background */
+  background-color: #f5f8fa; /* Very light gray */
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
   color: #333;
 }
-
+/* App container */
 .App {
   text-align: center;
   padding: 30px;
@@ -21,12 +21,13 @@ body {
   border-radius: 12px;
 }
 
+/* Headings */
 h2 {
-  color: #333;
+  color: #29abe2; /* Primary blue color */
   margin-bottom: 1rem;
 }
-
 p {
+  font-weight: 500;
   margin: 0.5rem 0;
   color: #555;
     font-size: 18px;
@@ -40,58 +41,47 @@ p {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   line-height: 1.125em;
   color: #000;
-    margin-bottom: 20px;
-}
-
-.react-calendar__navigation button {
-  background-color: #f4f4f9; /* Lighter background for navigation buttons */
-  border: none;
-  border-radius: 4px;
-  padding: 0.5rem;
-  transition: background-color 0.3s ease;
-}
-
-.react-calendar__navigation button:hover,
-.react-calendar__navigation button:focus {
-  background-color: #e0e0e0;
-}
-
-.react-calendar__month-view__weekdays__weekday {
-  font-weight: bold; /* Make weekdays bold */
-  color: #333;
-}
-
-.react-calendar__tile {
-  padding: 0.75rem;
-  border-radius: 6px;
-  transition: background-color 0.3s ease;
-}
-
-.react-calendar__tile:disabled {
-  background-color: #f0f0f0;
-}
-
-.react-calendar__tile--active {
-  background: #29abe2; /* Stronger blue for active day */
-  color: white;
-  border-radius: 6px;
+  margin-bottom: 20px;
 }
 
 .react-calendar__tile--now {
-  background: #e6f7ff;
-  border: 1px solid #007bff;
+    background-color: #0056b3; /* Dark blue for today's date */
+    color: white;
+    font-weight: bold;
 }
 
-.react-calendar__tile:enabled:hover {
-  background: #e6f7ff;
+.react-calendar__tile--hasActive:not(.react-calendar__tile--active) {
+    background: #0056b3;
+    color: white;
+}
+
+
+
+.react-calendar__tile {
+  padding: 1rem 0.75rem;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.react-calendar__month-view__days__day--weekend {
+  color: #d9534f;
+}
+
+.react-calendar__navigation button:disabled {
+  border: none;
+    background-color: transparent;
+}
+.react-calendar__tile--delivered {
+    position: relative;
 }
 
 .button-group {
   display: flex;
   justify-content: center;
-    margin-bottom: 15px;
+  margin-bottom: 15px;
   gap: 0.5rem;
   margin-top: 1rem;
+    flex-wrap: wrap;
 }
 
 .button-group button {
@@ -100,7 +90,7 @@ p {
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  background-color: #29abe2; /* Primary button color */
+    background-color: #007bff; /* Primary button color */
   color: white;
   transition: background-color 0.3s ease;
 }
@@ -134,28 +124,32 @@ p {
   box-shadow: 0 0 0 2px #29abe2; /* Highlight color */
 }
 
+/* Monthly Summary Styles */
 .monthly-summary {
   margin-top: 1.5rem;
-  display: grid;
-  gap: 10px;
+  display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
 }
 
-.monthly-summary button {
-  margin: 0.5rem;
-  padding: 0.8rem 1.6rem;
+
+.monthly-summary button {    
+    width: 100%;
+    margin: 0.5rem;
+    padding: 0.8rem 1.6rem;
     font-size: 16px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
     background-color: #29abe2; /* Primary color */
-  color: white;
-  width: fit-content;
+    color: white;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Add shadow */
 }
 
 .monthly-summary button:hover {
-    background-color: #208db8; /* Darker shade */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Larger shadow on hover */
+    background-color: #007bff;
 }
 
 /*Table Styles */
@@ -186,17 +180,50 @@ th {
 }
 
 tbody tr:nth-child(odd) {
-  background-color: #f9f9f9;
+    background-color: #f9f9f9;
 }
 
 tbody tr:hover {
-  background-color: #f0f0f0;
+    background-color: #f0f0f0;
+}
+
+
+.monthly-summary > button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.monthly-summary > button:not(:last-child) {
+    margin-bottom: 10px;
+}
+
+.delivered::after {
+    content: "";
+    position: absolute;
+    top: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #28a745; /* Green circle */
+}
+
+.price-input {
+    flex-direction: row;
 }
 
 @media (max-width: 768px) {
   .App {
     padding: 1rem;
   }
+  
+  .price-input {
+      flex-direction: column;
+  }
+}
 
   .button-group {
     flex-direction: column;
@@ -205,4 +232,4 @@ tbody tr:hover {
     .price-input {
         flex-direction: column;
     }
-}
+
