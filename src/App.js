@@ -105,25 +105,27 @@ function App() {
     const rows = [];
     let total = 0
 
-    for (const date in deliveryData) {
-      if (date.startsWith(currentMonthKey)) {
-        const entry = deliveryData[date];
-        if (entry.status === "Delivered") {
-          rows.push([date, entry.status, `₹${entry.price}`]);
-          total += parseFloat(entry.price);
+    if(deliveryData){
+      for (const date in deliveryData) {
+        if (date.startsWith(currentMonthKey)) {
+          const entry = deliveryData[date];
+          if (entry.status === "Delivered") {
+            rows.push([date, entry.status, `₹${entry.price}`]);
+            total += parseFloat(entry.price);
+          }
         }
       }
+      doc.text(`Monthly Summary for ${currentMonthKey}`, 20, 10);
+      doc.autoTable({ head: [["Date", "Status", "Price"]], body: rows });
+      doc.text(`Total Bill: ₹${total}`, 20, doc.lastAutoTable.finalY + 10);
+          const pdfDataUri = doc.output('datauristring');
+              const link = document.createElement('a');
+              link.href = pdfDataUri;
+              link.download = `summary_${currentMonthKey}.pdf`;
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
     }
-    doc.text(`Monthly Summary for ${currentMonthKey}`, 20, 10);
-    doc.autoTable({ head: [["Date", "Status", "Price"]], body: rows });
-    doc.text(`Total Bill: ₹${total}`, 20, doc.lastAutoTable.finalY + 10);
-        const pdfDataUri = doc.output('datauristring');
-            const link = document.createElement('a');
-            link.href = pdfDataUri;
-            link.download = `summary_${currentMonthKey}.pdf`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
 
   };
 
