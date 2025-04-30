@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
-import { ref, set, update, onValue,  } from 'firebase/database';
+import { ref, set, update, onValue } from 'firebase/database';
 import { database } from './firebase';
-import { jsPDF } from 'jspdf';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 import './App.css';
-jsPDF.autoTable = require('jspdf-autotable').default;
 
 function App() {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -43,6 +43,7 @@ function App() {
         });
   }, []);
 
+
   // Format the date to store in Firebase
   const formatDate = (date) => {
     const local = new Date(date);
@@ -66,17 +67,17 @@ function App() {
     set(ref(database, "bottlePrice"), newPrice);
   };
 
-    // Calculate total bottles and total bill
-    const calculateTotalBill = (data) => {
-        let bottles = 0;
-        let bill = 0;
-                                                                                                                                                                                                            for (const date in data) {
-                                                                                                                                                                                                                  if (data[date].status === "Delivered") {
-                                                                                                                                                                                                                          bottles++;
-                                                                                                                                                                                                                                  bill += parseFloat(data[date].price);
-                                                                                                                                                                                                                                        }
-                                                                                                                                                                                                                                            }
-                                                                                                                                                                                                                                                setTotalBottles(bottles);
+  // Calculate total bottles and total bill
+  const calculateTotalBill = (data) => {
+    let bottles = 0;
+    let bill = 0;
+    for (const date in data) {
+      if (data[date].status === "Delivered") {
+        bottles++;
+        bill += parseFloat(data[date].price);
+      }
+    }
+    setTotalBottles(bottles);
         setTotalBill(bill);
   };
 
@@ -104,30 +105,29 @@ function App() {
     const doc = new jsPDF();
     const currentMonthKey = getCurrentMonthKey();
         const rows = [];
-    let total = 0
+        let total = 0;
 
-    if(deliveryData){
-      for (const date in deliveryData) {
-        if (date.startsWith(currentMonthKey)) {
-          const entry = deliveryData[date];
-          if (entry.status === "Delivered") {
-            rows.push([date, entry.status, `₹${entry.price}`]);
-            total += parseFloat(entry.price);
-          }
+        if (deliveryData) {
+            for (const date in deliveryData) {
+                if (date.startsWith(currentMonthKey)) {
+                    const entry = deliveryData[date];
+                    if (entry.status === "Delivered") {
+                        rows.push([date, entry.status, `₹${entry.price}`]);
+                        total += parseFloat(entry.price);
+                    }
+                }
+            }
+            doc.text(`Monthly Summary for ${currentMonthKey}`, 20, 10);
+            doc.autoTable({ head: [["Date", "Status", "Price"]], body: rows });
+            doc.text(`Total Bill: ₹${total}`, 20, doc.lastAutoTable.finalY + 10);
+            const pdfDataUri = doc.output('datauristring');
+            const link = document.createElement('a');
+            link.href = pdfDataUri;
+            link.download = `summary_${currentMonthKey}.pdf`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
-      }
-      doc.text(`Monthly Summary for ${currentMonthKey}`, 20, 10);
-      doc.autoTable({ head: [["Date", "Status", "Price"]], body: rows });
-      doc.text(`Total Bill: ₹${total}`, 20, doc.lastAutoTable.finalY + 10);
-          const pdfDataUri = doc.output('datauristring');
-              const link = document.createElement('a');
-              link.href = pdfDataUri;
-              link.download = `summary_${currentMonthKey}.pdf`;
-              document.body.appendChild(link);
-              link.click();
-              document.body.removeChild(link);
-    }
-
   };
 
   return (
