@@ -1,5 +1,5 @@
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: inherit;
   margin: 0;
   padding: 0;
   background-color: #f5f8fa; /* Very light gray */
@@ -14,8 +14,8 @@ body {
   text-align: center;
   padding: 30px;
   max-width: 800px;
-  width: 95%;
-    margin: 20px;
+  width: 100%;
+    margin: 0;
   background-color: white;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   border-radius: 12px;
@@ -28,20 +28,21 @@ h2 {
 }
 p {
   font-weight: 500;
-  margin: 0.5rem 0;
+  margin: 1rem 0;
   color: #555;
-    font-size: 18px;
+    font-size: 19px;
 }
 
 .react-calendar {
   width: 100%;
   max-width: 100%;
   background: white;
-  border: 1px solid #e0e0e0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    border: none;
   line-height: 1.125em;
   color: #000;
   margin-bottom: 20px;
+    font-size: 16px;
+
 }
 
 .react-calendar__tile--now {
@@ -53,12 +54,11 @@ p {
 
 
 .react-calendar__tile {
-  padding: 1rem 0.75rem;
-  border-radius: 4px;
-  text-align: center;
+    text-align: center;
+    padding: 10px;
 }
 
-.react-calendar__month-view__days__day--weekend {
+ .react-calendar__month-view__days__day--weekend {
   color: #d9534f;
 }
 
@@ -105,10 +105,10 @@ p {
 .price-input input {
   padding: 0.4rem;
   font-size: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 6px;
+    border: none;
+    border-bottom: 1px solid #ccc;
   width: 80px;
-  text-align: center;
+    text-align: center;
 }
 
 .price-input input:focus {
@@ -122,8 +122,8 @@ p {
   display: flex;
   flex-direction: column;
     align-items: center;
-    justify-content: center;
-    margin-bottom: 20px;
+    justify-content: flex-start;
+
 }
 
 
@@ -135,7 +135,7 @@ p {
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    background-color: #29abe2; /* Primary color */
+    background-color: #007bff; /* Primary color */
     color: white;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Add shadow */
 }
@@ -163,9 +163,9 @@ thead {
 th, td {
   padding: 0.75rem;
   text-align: left;
-  border-bottom: 1px solid #e0e0e0;
+    border-bottom: none;
 }
-
+tbody {border-top: 1px solid #e0e0e0}
 th {
   font-weight: bold;
   color: #333;
