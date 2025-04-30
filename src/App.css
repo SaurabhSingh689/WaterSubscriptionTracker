@@ -1,100 +1,184 @@
 body {
-      font-family: Arial, sans-serif;
-        margin: 0;
-          padding: 0;
-            background-color: #f4f4f9;
-            }
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
 
-            .App {
-              text-align: center;
-                padding: 1rem;
-                  max-width: 600px;
-                    margin: auto;
-                      background-color: white;
-                        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-                          border-radius: 12px;
-                            margin-top: 2rem;
-                            }
+.App {
+  text-align: center;
+  padding: 2rem;
+  max-width: 800px;
+  width: 95%;
+  background-color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+}
 
-                            h2 {
-                              color: #333;
-                              }
+h2 {
+  color: #333;
+  margin-bottom: 1rem;
+}
 
-                              .react-calendar {
-                                width: 100%;
-                                  max-width: 100%;
-                                    background: white;
-                                      border: none;
-                                        font-family: Arial, Helvetica, sans-serif;
-                                          line-height: 1.125em;
-                                            color: #000;
-                                            }
+p {
+  margin: 0.5rem 0;
+  color: #555;
+}
 
-                                            .react-calendar__tile--active,
-                                            .react-calendar__tile--now {
-                                              background: #00aaff;
-                                                color: white;
-                                                }
+.react-calendar {
+  width: 100%;
+  max-width: 100%;
+  background: white;
+  border: 1px solid #e0e0e0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.125em;
+  color: #000;
+}
 
-                                                .react-calendar__tile:enabled:hover {
-                                                  background: #e6f7ff;
-                                                  }
+.react-calendar__navigation button {
+  background-color: #f4f4f9; /* Lighter background for navigation buttons */
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem;
+  transition: background-color 0.3s ease;
+}
 
-                                                  .button-group {
-                                                    display: flex;
-                                                      justify-content: center;
-                                                        flex-wrap: wrap;
-                                                          gap: 0.5rem;
-                                                            margin-top: 1rem;
-                                                            }
+.react-calendar__navigation button:hover,
+.react-calendar__navigation button:focus {
+  background-color: #e0e0e0;
+}
 
-                                                            .button-group button {
-                                                              padding: 0.6rem 1.2rem;
-                                                                font-size: 1rem;
-                                                                  border: none;
-                                                                    border-radius: 8px;
-                                                                      cursor: pointer;
-                                                                        background-color: #007bff;
-                                                                          color: white;
-                                                                            transition: background-color 0.3s ease;
-                                                                            }
+.react-calendar__month-view__weekdays__weekday {
+  font-weight: bold; /* Make weekdays bold */
+  color: #333;
+}
 
-                                                                            .button-group button:hover {
-                                                                              background-color: #0056b3;
-                                                                              }
+.react-calendar__tile {
+  padding: 0.75rem;
+  border-radius: 6px;
+  transition: background-color 0.3s ease;
+}
 
-                                                                              .price-input {
-                                                                                margin-top: 1rem;
-                                                                                }
+.react-calendar__tile:disabled {
+  background-color: #f0f0f0;
+}
 
-                                                                                .price-input input {
-                                                                                  padding: 0.4rem;
-                                                                                    font-size: 1rem;
-                                                                                      border: 1px solid #ccc;
-                                                                                        border-radius: 6px;
-                                                                                        }
+.react-calendar__tile--active {
+  background: #007bff;
+  color: white;
+  border-radius: 6px;
+}
 
-                                                                                        .monthly-summary {
-                                                                                          margin-top: 1.5rem;
-                                                                                          }
+.react-calendar__tile--now {
+  background: #e6f7ff;
+  border: 1px solid #007bff;
+}
 
-                                                                                          .monthly-summary button {
-                                                                                            margin: 0.5rem;
-                                                                                              padding: 0.5rem 1rem;
-                                                                                                font-size: 1rem;
-                                                                                                  border: none;
-                                                                                                    border-radius: 8px;
-                                                                                                      cursor: pointer;
-                                                                                                        background-color: #28a745;
-                                                                                                          color: white;
-                                                                                                            transition: background-color 0.3s ease;
-                                                                                                            }
+.react-calendar__tile:enabled:hover {
+  background: #e6f7ff;
+}
 
-                                                                                                            .monthly-summary button:hover {
-                                                                                                              background-color: #1e7e34;
-                                                                                                              }
+.button-group {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
 
-                                                                                                              input[type="number"] {
-                                                                                                                width: 100px;
-                                                                                                                  text-align: center;
-                                                                                                                  }
+.button-group button {
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background-color: #007bff;
+  color: white;
+  transition: background-color 0.3s ease;
+}
+
+.button-group button:hover {
+  background-color: #0056b3;
+}
+
+.price-input {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.price-input label {
+  margin-right: 0.5rem;
+}
+
+.price-input input {
+  padding: 0.4rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  width: 80px;
+  text-align: center;
+}
+
+.monthly-summary {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.monthly-summary button {
+  margin: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background-color: #28a745;
+  color: white;
+  transition: background-color 0.3s ease;
+  width: fit-content;
+}
+
+.monthly-summary button:hover {
+  background-color: #1e7e34;
+}
+
+/* Table Styles */
+table {
+  width: 100%;
+  max-width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+thead {
+  background-color: #f4f4f4;
+}
+
+th, td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+th {
+  font-weight: bold;
+  color: #333;
+}
+
+tbody tr:nth-child(odd) {
+  background-color: #f9f9f9;
+}
+
+tbody tr:hover {
+  background-color: #f0f0f0;
+}
