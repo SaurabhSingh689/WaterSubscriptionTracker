@@ -2,6 +2,14 @@
 <html lang="en">
   <head>
       <meta charset="UTF-8" />
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const viewport = document.querySelector('meta[name="viewport"]');
+        if (viewport) {
+          viewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
+        }
+      });
+    </script>
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
               <meta name="theme-color" content="#007BFF" />
                   <title>Water Bottle Tracker</title>
