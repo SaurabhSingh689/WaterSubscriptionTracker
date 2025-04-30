@@ -44,8 +44,10 @@ function App() {
   const tileClassName = ({ date, view }) => {
     if (view === 'month') {
       const formattedDate = formatDate(date);
-      if (Object.keys(deliveryData).includes(formattedDate) && deliveryData[formattedDate].status === 'Delivered') {
-        return 'delivered';
+      const isDelivered = deliveryData[formattedDate]?.status === 'Delivered';
+
+       if (isDelivered) {
+          return 'delivered';
       } else if (new Date().toDateString() === date.toDateString()) {
                 return 'today';
             }
@@ -104,8 +106,6 @@ function App() {
     }
         setDeliveryDates(newDeliveryDates);
     };
-
-
 
 
     const handleBillPaidToggle = () => {
