@@ -94,34 +94,35 @@ function App() {
         });
   };
 
-    const getCurrentMonthKey = () => {
-      return new Date().toISOString().slice(0, 7);
-      }
+  const getCurrentMonthKey = () => {
+    return new Date().toISOString().slice(0, 7);
+  };
 
   // Generate and download the PDF summary
   const generatePDF = () => {
     const doc = new jsPDF();
     const currentMonthKey = getCurrentMonthKey();
     const rows = [];
-    let total = 0;
+    let total = 0
 
     for (const date in deliveryData) {
       if (date.startsWith(currentMonthKey)) {
         const entry = deliveryData[date];
-        if (entry.status === 'Delivered') {
+        if (entry.status === "Delivered") {
           rows.push([date, entry.status, `₹${entry.price}`]);
           total += parseFloat(entry.price);
         }
       }
     }
-
     doc.text(`Monthly Summary for ${currentMonthKey}`, 20, 10);
-    doc.autoTable({
-      head: [['Date', 'Status', 'Price']],
-      body: rows,
-    });
+    doc.autoTable({ head: [["Date", "Status", "Price"]], body: rows });
     doc.text(`Total Bill: ₹${total}`, 20, doc.lastAutoTable.finalY + 10);
-    doc.save(`summary_${currentMonthKey}.pdf`);
+    const pdfDataUri = doc.output("datauristring");
+    const link = document.createElement("a");
+    link.href = pdfDataUri;
+    link.download = `summary_${currentMonthKey}.pdf`;
+    link.click();
+
   };
 
   return (
@@ -131,26 +132,26 @@ function App() {
                                                                                                                                                                                                                                                                                                                                                                                                                               <p>Selected Date: {formatDate(selectedDate)}</p>
                                                                                                                                                                                                                                                                                                                                                                                                                                     <p>Status: {getStatus(selectedDate)}</p>
 
-          <div className="button-group">
-            <button onClick={() => handleDeliveryStatus('Delivered')}>Mark Delivered</button>
-            <button onClick={() => handleDeliveryStatus('Skipped')}>Mark Skipped</button>
-          </div>
-
-          <div className="price-input">
-            <label>Bottle Price: ₹</label>
-            <input type="number" value={bottlePrice} onChange={handlePriceChange} />
-          </div>
-
-          <div className="monthly-summary">
-            <p>Total Bottles Delivered: {totalBottles}</p>
-            <p>Total Bill: ₹{totalBill}</p>
-            <button onClick={generatePDF}>Download Monthly Summary</button>
-            <button onClick={handleBillPaidToggle}>
-              Mark Bill as {paidStatus[selectedDate.toISOString().slice(0, 7)] ? 'Unpaid' : 'Paid'}
-            </button>
-          </div>
+        <div className="button-group">
+          <button onClick={() => handleDeliveryStatus("Delivered")}>Mark Delivered</button>
+          <button onClick={() => handleDeliveryStatus("Skipped")}>Mark Skipped</button>
         </div>
-    );
-  }
+
+        <div className="price-input">
+          <label>Bottle Price: ₹</label>
+          <input type="number" value={bottlePrice} onChange={handlePriceChange} />
+        </div>
+
+        <div className="monthly-summary">
+          <p>Total Bottles Delivered: {totalBottles}</p>
+          <p>Total Bill: ₹{totalBill}</p>
+          <button onClick={generatePDF}>Download Monthly Summary</button>
+          <button onClick={handleBillPaidToggle}>
+            Mark Bill as {paidStatus[selectedDate.toISOString().slice(0, 7)] ? "Unpaid" : "Paid"}
+          </button>
+        </div>
+      </div>
+  );
+}
 
 export default App;
