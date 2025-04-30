@@ -10,9 +10,9 @@ function App() {
   const [deliveryData, setDeliveryData] = useState({});
   const [bottlePrice, setBottlePrice] = useState(0);
   const [totalBottles, setTotalBottles] = useState(0);
-  const [showSummary, setShowSummary] = useState(false);
   const [paidStatus, setPaidStatus] = useState({});
   const [deliveryDates, setDeliveryDates] = useState([]);
+  const [showSummary, setShowSummary] = useState(false);
     const [totalBill, setTotalBill] = useState(0);
 
 
@@ -40,6 +40,17 @@ function App() {
       }
     });
   }, []);
+
+  const tileClassName = ({ date, view }) => {
+    if (view === 'month') {
+      const formattedDate = formatDate(date);
+      if (Object.keys(deliveryData).includes(formattedDate) && deliveryData[formattedDate].status === 'Delivered') {
+        return 'delivered';
+      } else if (new Date().toDateString() === date.toDateString()) {
+                return 'today';
+            }
+    }
+  };
 
   const formatDate = (date) => {
     const local = new Date(date);
@@ -106,7 +117,7 @@ function App() {
   return (
     <div className='App'>
       <h2>Water Bottle Subscription Tracker</h2>
-      <Calendar onChange={setSelectedDate} value={selectedDate}/>
+      <Calendar onChange={setSelectedDate} value={selectedDate} tileClassName={tileClassName} />
       <p>Selected Date: {formatDate(selectedDate)}</p>
       <p>Status: {getStatus(selectedDate)}</p>
       <div className='button-group'>
@@ -137,6 +148,6 @@ function App() {
       )}
     </div>
   );
+};
 
-}
 export default App;
