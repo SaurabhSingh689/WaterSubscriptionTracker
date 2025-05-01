@@ -13,20 +13,20 @@ function App() {
   const [paidStatus, setPaidStatus] = useState({});
   const [deliveryDates, setDeliveryDates] = useState([]);
   const [showSummary, setShowSummary] = useState(false);
-  const [monthWiseTotalBill, setMonthWiseTotalBill] = useState({});
-  const [monthWiseTotalBottles, setMonthWiseTotalBottles] = useState({});
-
+  const [totalBill, setTotalBill] = useState(0);
+    const [currentMonthTotalBill, setCurrentMonthTotalBill] = useState(0);
+  const [currentMonthTotalBottles, setCurrentMonthTotalBottles] = useState(0);
 
   useEffect(() => {
     const deliveryRef = ref(database, 'deliveries');
     const priceRef = ref(database, 'bottlePrice');
+
     const paidRef = ref(database, 'paidStatus');
 
     onValue(deliveryRef, (snapshot) => {
       if (snapshot.exists()) {
+
         setDeliveryData(snapshot.val());
-        const monthKey = getCurrentMonthKey();
-        calculateTotalBill(snapshot.val(), monthKey);
       }
     });
 
@@ -38,15 +38,18 @@ function App() {
 
     onValue(paidRef, (snapshot) => {
       if (snapshot.exists()) {
-        setPaidStatus(snapshot.val());
+          setPaidStatus(snapshot.val());
+        
       }
     });
   }, []);
 
-  const formatDate = (date) => {
-    const local = new Date(date);
-    local.setMinutes(date.getMinutes() - date.getTimezoneOffset());
-    return local.toISOString().split('T')[0];
+ const formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+
   };
 
   const handleDeliveryStatus = (status) => {
@@ -60,65 +63,75 @@ function App() {
     update(ref(database, 'bottlePrice'), newPrice);
   };
 
-  const calculateTotalBill = (data, monthKey) => {
-    let bottles = 0;
-    let bill = 0;
-    const monthData = {};
-
-    for (const key in data) {
-      if (key.startsWith(monthKey)) {
-        monthData[key] = data[key];
-      }
-    }
-
-    if (paidStatus[monthKey]) {
-      setMonthWiseTotalBill((prevBill) => ({ ...prevBill, [monthKey]: 0 }));
-      setMonthWiseTotalBottles((prevBottles) => ({ ...prevBottles, [monthKey]: 0 }));
-    } else {
+  const calculateTotalBill = (monthData) => {
+      let bottles = 0;
+      let bill = 0;
       for (const date in monthData) {
-        if (monthData[date].status === 'Delivered') {
-          bottles++;
-          bill += parseFloat(monthData[date].price);
-        }
+          if (monthData[date].status === "Delivered") {
+              bottles++;
+              bill += parseFloat(monthData[date].price);
+          }
       }
+          setCurrentMonthTotalBottles(bottles);
+      setCurrentMonthTotalBill(bill);
+    
+      return {bottles, bill};
 
-      setMonthWiseTotalBottles((prevBottles) => ({ ...prevBottles, [monthKey]: bottles }));
-      setMonthWiseTotalBill((prevBill) => ({ ...prevBill, [monthKey]: bill }));
-    }
   };
-
+  
   const getStatus = (date) => {
-    const key = date.toISOString().slice(0, 10);
+    const key = formatDate(date);
     return deliveryData[key]?.status || 'None';
   };
 
-  const getCurrentMonthKey = () => new Date().toISOString().slice(0, 7);
+    const getCurrentMonthKey = () => {
+        return selectedDate.toISOString().slice(0, 7);
+    };
 
+    
+  useEffect(() => {
+      const currentMonthKey = getCurrentMonthKey(); 
+      let monthData = {};
+      for (const date in deliveryData) {
+          const formattedDate = formatDate(new Date(date));
+        if (formattedDate.startsWith(currentMonthKey)) {
+
+          monthData[date] = deliveryData[date];
+        }
+      }
+        if (Object.keys(monthData).length === 0 && monthData.constructor === Object) {
+            setCurrentMonthTotalBill(0);
+            setCurrentMonthTotalBottles(0);
+        } else {
+            calculateTotalBill(monthData);        }
+       
+    }, [deliveryData,selectedDate]);
+    
   const generateDeliverySummary = () => {
     setShowSummary(!showSummary);
     const currentMonthKey = getCurrentMonthKey();
     const newDeliveryDates = [];
-    if (deliveryData) {
-        for (const date in deliveryData) {
-            if (date.startsWith(currentMonthKey) && deliveryData[date].status === "Delivered") {
-                newDeliveryDates.push(date);
-            }
-        }
+    for (const date in deliveryData) {
+      if (date.startsWith(currentMonthKey) && deliveryData[date].status === "Delivered") {
+        newDeliveryDates.push(date);      }
     }
-    setDeliveryDates(newDeliveryDates);
-  };
+        setDeliveryDates(newDeliveryDates);
+    };
 
 
-  const handleBillPaidToggle = () => {
-    const monthKey = selectedDate.toISOString().slice(0, 7);
-    update(ref(database, `paidStatus`), {
-      [monthKey]: !paidStatus[monthKey],
-    }).then(() => calculateTotalBill(deliveryData, monthKey));
-  };
+    const handleBillPaidToggle = () => {
+      const monthKey = getCurrentMonthKey();
+         const paidRef = ref(database, 'paidStatus');        
+        
+        update(ref(database, `paidStatus`), { [monthKey]: !paidStatus[monthKey] }).then(() => {
+            setPaidStatus(prev => ({ ...prev, [monthKey]: !prev[monthKey] }));
+        });
+    };
+
   return (
     <div className='App'>
       <h2>Water Bottle Subscription Tracker</h2>
-         <Calendar onChange={setSelectedDate} value={selectedDate} />
+      <Calendar onChange={setSelectedDate} value={selectedDate} />
       <p>Selected Date: {formatDate(selectedDate)}</p>
       <p>Status: {getStatus(selectedDate)}</p>
       <div className='button-group'>
@@ -129,30 +142,27 @@ function App() {
         <label>Bottle Price: ₹</label>
         <input type='number' value={bottlePrice} onChange={handlePriceChange} />
       </div>
-      <div className='monthly-summary'>
-        <p>Total Bottles Delivered (Current Month): {monthWiseTotalBottles[getCurrentMonthKey()] || 0}</p>
-        <p>Total Bill (Current Month): ₹{monthWiseTotalBill[getCurrentMonthKey()] || 0}</p>
-        <button onClick={generateDeliverySummary}>View Monthly Summary</button>
-        <button onClick={handleBillPaidToggle}>
-          Mark Bill as {paidStatus[selectedDate.toISOString().slice(0, 7)]
-            ? (
-              <span>Unpaid (₹{monthWiseTotalBill[selectedDate.toISOString().slice(0, 7)]})</span>
-            ) : (
-              "Paid"
-            )}
-        </button>
-      </div>
-      {showSummary && (
-        <table>
+        <button className='button-group' onClick={generateDeliverySummary}>View Monthly Summary</button>
+        <button className='button-group' onClick={handleBillPaidToggle}>
+          Mark Bill as {paidStatus[getCurrentMonthKey()] ? "Unpaid" : "Paid"}
+        </button> <div className='current-month-details' style={{ display: 'flex', alignItems: 'center' }}>
+            <p>
+           Current Month Total Bottles: {currentMonthTotalBottles}
+            , Current Month Total Bill: ₹{currentMonthTotalBill}
+        </p>
+        </div>
+      {showSummary &&
+        (<table>
           <thead>
-            <tr><th>Delivered Dates</th></tr>
+            <tr>
+              <th>Delivered Dates</th></tr>
           </thead>
           <tbody>
             {deliveryDates.map((date) => (<tr key={date}><td>{date}</td></tr>))}
           </tbody>
         </table>
-      )}
-    </div>
+          )}
+          </div>
   );
 };
 
