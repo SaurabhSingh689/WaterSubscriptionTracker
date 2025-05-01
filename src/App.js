@@ -13,7 +13,8 @@ function App() {
   const [paidStatus, setPaidStatus] = useState({});
   const [deliveryDates, setDeliveryDates] = useState([]);
   const [showSummary, setShowSummary] = useState(false);
-    const [totalBill, setTotalBill] = useState(0);
+  const [monthWiseTotalBill, setMonthWiseTotalBill] = useState({});
+  const [monthWiseTotalBottles, setMonthWiseTotalBottles] = useState({});
 
 
   useEffect(() => {
@@ -24,7 +25,8 @@ function App() {
     onValue(deliveryRef, (snapshot) => {
       if (snapshot.exists()) {
         setDeliveryData(snapshot.val());
-        calculateTotalBill(snapshot.val());
+        const monthKey = getCurrentMonthKey();
+        calculateTotalBill(snapshot.val(), monthKey);
       }
     });
 
@@ -58,30 +60,42 @@ function App() {
     update(ref(database, 'bottlePrice'), newPrice);
   };
 
-  const calculateTotalBill = (data) => {
+  const calculateTotalBill = (data, monthKey) => {
     let bottles = 0;
     let bill = 0;
-    for (const date in data) {
-      if (data[date].status === 'Delivered') {
-        bottles++;
-        bill += parseFloat(data[date].price);
+    const monthData = {};
+
+    for (const key in data) {
+      if (key.startsWith(monthKey)) {
+        monthData[key] = data[key];
       }
     }
-    setTotalBottles(bottles);
-    setTotalBill(bill);
+
+    if (paidStatus[monthKey]) {
+      setMonthWiseTotalBill((prevBill) => ({ ...prevBill, [monthKey]: 0 }));
+      setMonthWiseTotalBottles((prevBottles) => ({ ...prevBottles, [monthKey]: 0 }));
+    } else {
+      for (const date in monthData) {
+        if (monthData[date].status === 'Delivered') {
+          bottles++;
+          bill += parseFloat(monthData[date].price);
+        }
+      }
+
+      setMonthWiseTotalBottles((prevBottles) => ({ ...prevBottles, [monthKey]: bottles }));
+      setMonthWiseTotalBill((prevBill) => ({ ...prevBill, [monthKey]: bill }));
+    }
   };
 
   const getStatus = (date) => {
-    const key = formatDate(date);
+    const key = date.toISOString().slice(0, 10);
     return deliveryData[key]?.status || 'None';
   };
 
-    const getCurrentMonthKey = () => {
-        return new Date().toISOString().slice(0, 7);
-    };
+  const getCurrentMonthKey = () => new Date().toISOString().slice(0, 7);
 
   const generateDeliverySummary = () => {
-        setShowSummary(!showSummary);
+    setShowSummary(!showSummary);
     const currentMonthKey = getCurrentMonthKey();
     const newDeliveryDates = [];
     if (deliveryData) {
@@ -91,16 +105,16 @@ function App() {
             }
         }
     }
-        setDeliveryDates(newDeliveryDates);
-    };
+    setDeliveryDates(newDeliveryDates);
+  };
 
 
-    const handleBillPaidToggle = () => {
-      const monthKey = selectedDate.toISOString().slice(0, 7);
-        update(ref(database, `paidStatus`), {
-            [monthKey]: !paidStatus[monthKey],
-        });
-    }
+  const handleBillPaidToggle = () => {
+    const monthKey = selectedDate.toISOString().slice(0, 7);
+    update(ref(database, `paidStatus`), {
+      [monthKey]: !paidStatus[monthKey],
+    }).then(() => calculateTotalBill(deliveryData, monthKey));
+  };
   return (
     <div className='App'>
       <h2>Water Bottle Subscription Tracker</h2>
@@ -116,11 +130,16 @@ function App() {
         <input type='number' value={bottlePrice} onChange={handlePriceChange} />
       </div>
       <div className='monthly-summary'>
-        <p>Total Bottles Delivered: {totalBottles}</p>
-        <p>Total Bill: ₹{totalBill}</p>
+        <p>Total Bottles Delivered (Current Month): {monthWiseTotalBottles[getCurrentMonthKey()] || 0}</p>
+        <p>Total Bill (Current Month): ₹{monthWiseTotalBill[getCurrentMonthKey()] || 0}</p>
         <button onClick={generateDeliverySummary}>View Monthly Summary</button>
         <button onClick={handleBillPaidToggle}>
-          Mark Bill as {paidStatus[selectedDate.toISOString().slice(0, 7)] ? "Unpaid" : "Paid"}
+          Mark Bill as {paidStatus[selectedDate.toISOString().slice(0, 7)]
+            ? (
+              <span>Unpaid (₹{monthWiseTotalBill[selectedDate.toISOString().slice(0, 7)]})</span>
+            ) : (
+              "Paid"
+            )}
         </button>
       </div>
       {showSummary && (
