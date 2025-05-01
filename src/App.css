@@ -22,9 +22,10 @@ h2 {
   margin-bottom: 1rem;
 }
 p {
+  font-family: default;
   font-weight: 400;
   margin: 1rem 0;
-  color: #555; /* Adjust paragraph color */
+  color: #000000; /* Adjust paragraph color */
     font-size: 19px;
 }
 
@@ -55,7 +56,7 @@ p {
 }
 
  .react-calendar__month-view__days__day--weekend {
-  color: #d9534f;
+  color: #fa0800;
 }
 
 
@@ -102,9 +103,10 @@ p {
   padding: 0.4rem;
   font-size: 1rem;
   border: none;
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid #000000;
   width: 80px;
   text-align: center;
+  margin: 0.5rem;
 }
 
 .price-input input:focus {
