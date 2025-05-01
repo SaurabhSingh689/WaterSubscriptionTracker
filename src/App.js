@@ -142,8 +142,8 @@ function App() {
         <label>Bottle Price: ₹</label>
         <input type='number' value={bottlePrice} onChange={handlePriceChange} />
       </div>
-        <button className='button-group' onClick={generateDeliverySummary}>View Monthly Summary</button>
-        <button className='button-group' onClick={handleBillPaidToggle}>
+        <button className='monthly-summary button' onClick={generateDeliverySummary}>View Monthly Summary</button>
+        <button className='monthly-summary button' onClick={handleBillPaidToggle}>
           Mark Bill as {paidStatus[getCurrentMonthKey()] ? "Unpaid" : "Paid"}
         </button> <div className='current-month-details' style={{ display: 'flex', alignItems: 'center' }}>
             <p>

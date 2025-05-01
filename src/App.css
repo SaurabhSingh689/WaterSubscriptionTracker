@@ -75,7 +75,7 @@ p {
     flex-wrap: wrap;
 }
 
-.button-group button {
+.button-group button,.button{
   padding: 0.6rem 1.2rem;
   font-size: 1rem;
   border: none;
@@ -124,20 +124,7 @@ p {
   outline: none; /* Remove outline on focus */
 }
 
-/* Monthly Summary Styles */
-.monthly-summary {
-    margin-top: 1.5rem;
-    display: flex;
-    align-items: center;      
-    margin-bottom: 15px;     
-  padding: 0.6rem 1.2rem;
-  font-size: 1rem;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;    
-  }
 
-/*Table Styles */
 table { /* Adjust table spacing */
   width: 100%;
   max-width: 100%;
@@ -175,7 +162,7 @@ tbody tr:hover {
 }
 
 
-  
+
 .price-input {
     flex-direction: row;
 }
