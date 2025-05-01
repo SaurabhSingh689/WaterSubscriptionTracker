@@ -58,60 +58,47 @@ p {
   color: #d9534f;
 }
 
-.react-calendar__navigation button:disabled {
-  border: none;
-  background-color: transparent;
-}
-
-
-
 
 
 .button-group {
   display: flex;
   justify-content: center;
-  margin-bottom: 15px;
-  gap: 1rem;
-    flex-wrap: wrap;
+  margin-bottom: 1.5rem; /* Add margin at bottom */
+  gap: 1rem; /* Adjust gap as needed */
 }
-
-.button-group button,.button{
-  padding: 0.6rem 1.2rem;
+.button{    
+    max-width: 250px;
+    }
+.button-group button,.button {
   font-size: 1rem;
   border: none;
+  font-weight: 500;    
+  padding: 0.6rem 1.2rem;
+
+    border-radius: 8px;   
+    background-color: #007bff;
+    
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.button-group button:hover, .button:hover{    
+    background-color: #0056b3;
+}
+.button-container {
     display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-    white-space: nowrap;
-  min-width: 100px;
-  max-width: 200px;
-  flex-grow: 1;
-    
-    
-  border-radius: 8px;
-  cursor: pointer;
-    background-color: #007bff; /* Primary button color */
-  color: white;
-  transition: background-color 0.3s ease;
-}
-
-.button-group button:hover {
-  background-color: #0056b3;
-}
-
-.price-input {
-  margin-top: 1rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    gap: 0.5rem;
 }
 
 .price-input label {
   margin-right: 0.5rem;
 }
 
-.price-input input {
+.price-input input { 
   padding: 0.4rem;
   font-size: 1rem;
   border: none;
@@ -124,8 +111,7 @@ p {
   outline: none; /* Remove outline on focus */
 }
 
-
-table { /* Adjust table spacing */
+table { 
   width: 100%;
   max-width: 100%;
   border-collapse: collapse;
@@ -150,10 +136,10 @@ tbody {border-top: 1px solid #e0e0e0} /* Add a top border to body */
 th {
   font-weight: bold;
     font-size: 19px; /* Adjust table header font size */
-  color: #333;
+    color: #333;
 }
 
-tbody tr:nth-child(odd) {
+tbody tr:nth-child(odd){
     background-color: #f9f9f9;
 }
 
@@ -161,16 +147,13 @@ tbody tr:hover {
     background-color: #f0f0f0;
 }
 
-
-
 .price-input {
     flex-direction: row;
 }
-
+   
 @media (max-width: 768px) { /* Mobile responsiveness */
-  
+
     .App {
       padding: 0px;
-  
 }
 }

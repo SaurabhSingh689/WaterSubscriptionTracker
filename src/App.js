@@ -129,41 +129,42 @@ function App() {
     };
 
   return (
-    <div className='App'>
+    <div className="App">
       <h2>Water Bottle Subscription Tracker</h2>
       <Calendar onChange={setSelectedDate} value={selectedDate} />
       <p>Selected Date: {formatDate(selectedDate)}</p>
       <p>Status: {getStatus(selectedDate)}</p>
-      <div className='button-group'>
-        <button onClick={() => handleDeliveryStatus('Delivered')}>Mark Delivered</button>
+      <div className="button-group"><button onClick={() => handleDeliveryStatus('Delivered')}>Mark Delivered</button>
         <button onClick={() => handleDeliveryStatus('Skipped')}>Mark Skipped</button>
       </div>
       <div className='price-input'>
         <label>Bottle Price: ₹</label>
         <input type='number' value={bottlePrice} onChange={handlePriceChange} />
       </div>
-        <button className='monthly-summary button' onClick={generateDeliverySummary}>View Monthly Summary</button>
-        <button className='monthly-summary button' onClick={handleBillPaidToggle}>
-          Mark Bill as {paidStatus[getCurrentMonthKey()] ? "Unpaid" : "Paid"}
-        </button> <div className='current-month-details' style={{ display: 'flex', alignItems: 'center' }}>
-            <p>
+      <div className='button-container'>
+        <button className="button" onClick={generateDeliverySummary}>View Monthly Summary</button>
+        <button className="button" onClick={handleBillPaidToggle}>
+            Mark Bill as {paidStatus[getCurrentMonthKey()] ? "Unpaid" : "Paid"}
+        </button>
+      </div>
+        <p>
            Current Month Total Bottles: {currentMonthTotalBottles}
             , Current Month Total Bill: ₹{currentMonthTotalBill}
         </p>
-        </div>
-      {showSummary &&
-        (<table>
+        {showSummary && (
+        <table>
           <thead>
             <tr>
-              <th>Delivered Dates</th></tr>
+              <th>Delivered Dates</th>
+            </tr>
           </thead>
           <tbody>
             {deliveryDates.map((date) => (<tr key={date}><td>{date}</td></tr>))}
           </tbody>
         </table>
           )}
-          </div>
-  );
+        </div>
+      );
 };
 
 export default App;
